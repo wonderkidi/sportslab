@@ -1,0 +1,14 @@
+version: '3'
+services:
+  dashboard:
+    image: python:3.9-slim
+    container_name: sportslab
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "3010:3010"  # [변경] 겉과 속을 3010으로 통일
+    command: >
+      bash -c "pip install -r requirements.txt && streamlit run app.py --server.port 3010"
+    # [핵심] 위 줄 끝에 --server.port 3010 을 꼭 붙여줘야 합니다!
+    restart: always
