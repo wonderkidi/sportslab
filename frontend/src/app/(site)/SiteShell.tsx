@@ -45,6 +45,17 @@ export default function SiteShell({ children }: PropsWithChildren) {
                 <h1 className="headerTitle">SPORTS LAB</h1>
               </div>
               <div className="headerActions">
+                <div className="headerButtons">
+                  <Link href="/" className="headerBtn">
+                    전체
+                  </Link>
+                  <Link href="/players" className="headerBtn">
+                    선수조회
+                  </Link>
+                  <Link href="/community" className="headerBtn">
+                    커뮤니티
+                  </Link>
+                </div>
                 <button
                   type="button"
                   onClick={() => setMobileOpen(true)}

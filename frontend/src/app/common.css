@@ -55,6 +55,30 @@
   gap: 0.75rem;
 }
 
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerBtn {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.headerBtn:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  transform: translateY(-1px);
+}
+
 .livePill {
   display: inline-flex;
   align-items: center;
@@ -220,6 +244,393 @@
   display: block;
 }
 
+
+
+.detailWrap {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+
+.titPage {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.dateSelect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 0.75rem 1rem;
+}
+
+
+.date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.date button {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.dateSelectInner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date select {
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.selectLeague select {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.teamSelect select {
+  width: auto;
+  min-width: 140px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.teamSelect {
+  margin-left: auto;
+}
+
+.playersWrap {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.playersFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.selectInput,
+.textInput {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.textInput {
+  min-width: 220px;
+}
+
+.primaryBtn {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #111827;
+  padding: 0.55rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.2);
+}
+
+.playersResult {
+  display: grid;
+  gap: 1rem;
+}
+
+.resultTitle {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.resultPoint {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.tableWrap {
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+
+.emptyRow {
+  padding: 1.5rem 0;
+  color: var(--muted);
+}
+
+.paging {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pageBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.pageBtn.isActive {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.2);
+}
+
+.playerLink {
+  color: var(--card-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.playerLink:hover {
+  text-decoration: underline;
+}
+
+.playerDetailWrap {
+  width: 100%;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.playerInfo {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.playerTeam {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.teamBadge {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.teamSub {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.playerBasic {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.playerPhoto {
+  width: 160px;
+  height: 200px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.playerMeta {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1rem;
+  color: var(--card-ink);
+  font-size: 0.9rem;
+}
+
+.playerMeta strong {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.playerTabs {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.tabGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tabBtn {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tabBtn.isActive {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.2);
+}
+
+.playerRecords {
+  display: grid;
+  gap: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+}
+
+.tblType {
+  margin-top: 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  color: var(--card-ink);
+}
+
+.tbl th,
+.tbl td {
+  padding: 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.tbl thead th {
+  background: var(--surface);
+  color: var(--chip-text);
+}
+
+.tbl .play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tbl .play em {
+  font-style: normal;
+  color: var(--muted);
+}
+
+.boxCal {
+  display: none;
+}
+
+.schedulCalender {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+}
+
+.schedulCalender th,
+.schedulCalender td {
+  text-align: center;
+  padding: 0.7rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.dayNum {
+  font-size: 0.85rem;
+  color: var(--card-ink);
+}
+.detailGridLayout {
+  width: 100%;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.detailGridHeader {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 1.5rem;
+  color: #ffffff;
+}
+
+.detailTab {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.detailLeague {
+  justify-self: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.detailGridBody {
+  width: 100%;
+}
 .card {
   position: relative;
   overflow: hidden;
@@ -235,15 +646,6 @@
 .detailTop {
   display: flex;
   justify-content: flex-start;
-}
-
-.detailWide {
-  width: 100%;
-  border-radius: 0;
-  border: none;
-  background: transparent;
-  padding: 0.5rem 0;
-  box-shadow: none;
 }
 
 .detailEmpty {
