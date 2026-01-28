@@ -11,7 +11,7 @@ export default function DetailPage({ params }: DetailPageProps) {
     <>
       <div className="detailTop">
         <Link href="/" className="backIcon" aria-label="메인으로">
-          ←
+          back
         </Link>
       </div>
       <article className="detailWide">

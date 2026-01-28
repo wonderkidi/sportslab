@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { PropsWithChildren, useState } from "react";
 
 const tabs = [
-  { label: "메인", active: true },
-  { label: "경기결과", active: false },
-  { label: "커뮤니티", active: false },
+  { label: "메인", href: "/" },
+  { label: "경기결과", href: "/" },
+  { label: "커뮤니티", href: "/community" },
 ];
 
 const leagues = [
@@ -32,7 +32,6 @@ const toSlug = (league: string) =>
 
 export default function SiteShell({ children }: PropsWithChildren) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const isDetail = pathname?.startsWith("/detail/");
 
@@ -43,14 +42,9 @@ export default function SiteShell({ children }: PropsWithChildren) {
           <div className="headerCard">
             <div className="headerTop">
               <div>
-                <p className="headerLabel">SportsLab Live</p>
                 <h1 className="headerTitle">SPORTS LAB</h1>
               </div>
               <div className="headerActions">
-                <div className="livePill">
-                  <span className="pulseDot" />
-                  LIVE UPDATE MOCK
-                </div>
                 <button
                   type="button"
                   onClick={() => setMobileOpen(true)}
@@ -62,30 +56,24 @@ export default function SiteShell({ children }: PropsWithChildren) {
             </div>
             <nav className="tabNav">
               {tabs.map((tab) => (
-                <button
+                <Link
                   key={tab.label}
-                  className={`tabButton ${tab.active ? "tabActive" : "tabInactive"}`}
-                  type="button"
+                  href={tab.href}
+                  className={`tabButton ${
+                    pathname === tab.href ? "tabActive" : "tabInactive"
+                  }`}
                 >
                   {tab.label}
-                </button>
+                </Link>
               ))}
             </nav>
           </div>
         </header>
 
-        <div className={`contentGrid ${collapsed ? "contentGridCollapsed" : ""}`}>
+        <div className="contentWrap">
           <aside className="sideColumn">
             <div className="stickyWrap">
-              <div className={`leagueList ${collapsed ? "leagueListCollapsed" : ""}`}>
-                <button
-                  type="button"
-                  onClick={() => setCollapsed((prev) => !prev)}
-                  className="leagueCollapseBtn"
-                  aria-label={collapsed ? "확장" : "축소"}
-                >
-                  {collapsed ? "→" : "←"}
-                </button>
+              <div className="leagueList">
                 {leagues.map((league) => (
                   <Link
                     key={league}
@@ -99,11 +87,13 @@ export default function SiteShell({ children }: PropsWithChildren) {
             </div>
           </aside>
 
-          <main className="main">
-            <section className={isDetail ? "detailGrid" : "cardGrid"}>
-              {children}
-            </section>
-          </main>
+          <div className="contentGrid">
+            <main className="main">
+              <section className={isDetail ? "detailGrid" : "cardGrid"}>
+                {children}
+              </section>
+            </main>
+          </div>
         </div>
       </div>
 
