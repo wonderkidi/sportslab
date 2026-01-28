@@ -4,12 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PropsWithChildren, useState } from "react";
 
-const tabs = [
-  { label: "메인", href: "/" },
-  { label: "경기결과", href: "/" },
-  { label: "커뮤니티", href: "/community" },
-];
-
 const leagues = [
   "MLB",
   "NBA",
@@ -44,39 +38,32 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <div>
                 <h1 className="headerTitle">SPORTS LAB</h1>
               </div>
-              <div className="headerActions">
-                <div className="headerButtons">
-                  <Link href="/" className="headerBtn">
-                    전체
-                  </Link>
-                  <Link href="/players" className="headerBtn">
-                    선수조회
-                  </Link>
-                  <Link href="/community" className="headerBtn">
-                    커뮤니티
-                  </Link>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(true)}
-                  className="leagueToggle"
-                >
-                  리그 보기
-                </button>
-              </div>
             </div>
             <nav className="tabNav">
-              {tabs.map((tab) => (
-                <Link
-                  key={tab.label}
-                  href={tab.href}
-                  className={`tabButton ${
-                    pathname === tab.href ? "tabActive" : "tabInactive"
-                  }`}
-                >
-                  {tab.label}
-                </Link>
-              ))}
+              <Link
+                href="/"
+                className={`tabButton ${
+                  pathname === "/" ? "tabActive" : "tabInactive"
+                }`}
+              >
+                메인
+              </Link>
+              <Link
+                href="/players"
+                className={`tabButton ${
+                  pathname === "/players" ? "tabActive" : "tabInactive"
+                }`}
+              >
+                선수조회
+              </Link>
+              <Link
+                href="/community"
+                className={`tabButton ${
+                  pathname === "/community" ? "tabActive" : "tabInactive"
+                }`}
+              >
+                커뮤니티
+              </Link>
             </nav>
           </div>
         </header>

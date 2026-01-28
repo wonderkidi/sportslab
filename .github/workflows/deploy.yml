@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ] # main 브랜치에 푸시될 때 실행
+    branches: [ "ddd"] # main 브랜치에 푸시될 때 실행
 
 jobs:
   build:

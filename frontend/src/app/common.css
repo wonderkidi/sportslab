@@ -335,6 +335,7 @@
   width: 100%;
   display: grid;
   gap: 1.5rem;
+  min-height: calc(100vh - 350px);
 }
 
 .playersFilters {
