@@ -1,0 +1,564 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  color: var(--ink);
+}
+
+.container {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 72rem;
+}
+
+.headerCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-radius: 32px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  padding: 1.5rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.headerTop {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.headerTitle {
+  margin-top: 0.5rem;
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.headerLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.45em;
+  color: var(--muted);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.livePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--chip-text);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+}
+
+.pulseDot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.mobileToggle,
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--chip-text);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease;
+}
+
+.leagueToggle {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--chip-text);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease;
+}
+
+.leagueToggle:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.mobileToggle:hover,
+.themeToggle:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.tabNav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.tabButton {
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.tabActive {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
+}
+
+.tabInactive {
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.tabInactive:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.contentGrid {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.main {
+  width: 100%;
+}
+
+.sideColumn {
+  display: none;
+}
+
+.stickyWrap {
+  position: sticky;
+  top: 2.5rem;
+}
+
+.leagueList {
+  display: flex;
+  width: 10.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: center;
+  border-radius: 28px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  padding: 1rem 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--muted);
+  box-shadow: var(--shadow);
+}
+
+.leagueListCollapsed {
+  width: 3.5rem;
+  padding: 0.75rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.leagueCollapseBtn {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease;
+}
+
+.leagueCollapseBtn:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.leagueButton {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.5rem 0.75rem;
+  font-size: 1.03125rem;
+  font-weight: 600;
+  color: var(--chip-text);
+  transition: all 0.2s ease;
+}
+
+.leagueListCollapsed .leagueButton {
+  padding: 0.4rem 0.4rem;
+  font-size: 0.75rem;
+}
+
+.leagueButton:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  color: var(--ink);
+}
+
+.cardGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.detailGrid {
+  width: 100%;
+  display: block;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: rise 0.65s ease both;
+}
+
+.detailTop {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.detailWide {
+  width: 100%;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0;
+  box-shadow: none;
+}
+
+.detailEmpty {
+  min-height: calc(100vh - 350px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detailEmptyText {
+  font-size: 5rem;
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardLink:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.cardGlow {
+  position: absolute;
+  right: -2rem;
+  top: -2.5rem;
+  height: 6rem;
+  width: 6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  filter: blur(24px);
+  transition: background 0.2s ease;
+}
+
+.card:hover .cardGlow {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+  color: var(--card-ink);
+}
+
+.cardBadge {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--chip-text);
+}
+
+.cardBody {
+  margin-top: 1.5rem;
+}
+
+.cardHighlight {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--card-ink);
+}
+
+.cardDetail {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--card-muted);
+}
+
+.cardFooter {
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--card-muted);
+}
+
+.footerDot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+}
+
+.overlayBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 20, 0.6);
+}
+
+.drawer {
+  position: relative;
+  height: 100%;
+  width: 16rem;
+  background: var(--panel);
+  padding: 2rem 1.5rem;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.3);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawerTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--muted);
+}
+
+.drawerClose {
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--chip-text);
+}
+
+.drawerList {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.drawerButton {
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--chip-text);
+  transition: all 0.2s ease;
+}
+
+.drawerButton:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  color: var(--ink);
+}
+
+.backIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 12px;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+}
+
+.backIcon:hover {
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+@media (min-width: 640px) {
+  .page {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .headerCard {
+    gap: 1.5rem;
+    border-radius: 28px;
+    padding: 1.75rem 2rem;
+  }
+
+  .headerTop {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .headerTitle {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .livePill {
+    font-size: 0.875rem;
+  }
+
+  .tabNav {
+    gap: 0.75rem;
+  }
+
+  .tabButton {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
+  .cardGrid {
+    gap: 1.5rem;
+  }
+
+  .card {
+    border-radius: 28px;
+    padding: 1.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1.875rem;
+  }
+
+  .cardHighlight {
+    font-size: 1.5rem;
+  }
+
+  .cardFooter {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .leagueToggle {
+    display: none;
+  }
+
+  .contentGrid {
+    margin-top: 2.5rem;
+    grid-template-columns: 160px 1fr;
+  }
+
+  .contentGridCollapsed {
+    grid-template-columns: 80px 1fr;
+  }
+
+  .sideColumn {
+    display: block;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.55;
+  }
+}
