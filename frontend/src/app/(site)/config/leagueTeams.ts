@@ -1,0 +1,12 @@
+import { TEAMS } from "./teams";
+
+export const LEAGUE_TEAMS = {
+  KBO: TEAMS.KBO,
+  NBA: TEAMS.NBA,
+  MLB: TEAMS.MLB,
+  EPL: TEAMS.EPL,
+  NHL: TEAMS.NHL,
+  KLEAGUE: TEAMS["K-LEAGUE"],
+  NFL: TEAMS.NFL,
+  UCL: TEAMS.UCL,
+};

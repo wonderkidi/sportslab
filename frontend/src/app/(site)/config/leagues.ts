@@ -1,0 +1,16 @@
+export const LEAGUES = [
+  "KBO",
+  "MLB",
+  "NBA",
+  "EPL",
+  "NFL",
+  "NHL",
+  "UCL",
+  "IPL",
+  "K-LEAGUE",
+  "SERIE A",
+  "LA LIGA",
+  "BUNDESLIGA",
+  "KBO",
+  "KBL",
+];

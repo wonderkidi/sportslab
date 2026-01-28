@@ -3,20 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PropsWithChildren, useState } from "react";
-
-const leagues = [
-  "MLB",
-  "NBA",
-  "EPL",
-  "NFA",
-  "NHL",
-  "UCL",
-  "IPL",
-  "K-LEAGUE",
-  "SERIE A",
-  "LA LIGA",
-  "BUNDESLIGA",
-];
+import { LEAGUES } from "./config/leagues";
 
 const toSlug = (league: string) =>
   league
@@ -46,7 +33,17 @@ export default function SiteShell({ children }: PropsWithChildren) {
                   pathname === "/" ? "tabActive" : "tabInactive"
                 }`}
               >
-                메인
+                전체
+              </Link>
+              <Link
+                href="/detail/kbo"
+                className={`tabButton ${
+                  pathname?.startsWith("/detail")
+                    ? "tabActive"
+                    : "tabInactive"
+                }`}
+              >
+                경기일정・결과
               </Link>
               <Link
                 href="/players"
@@ -72,7 +69,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
           <aside className="sideColumn">
             <div className="stickyWrap">
               <div className="leagueList">
-                {leagues.map((league) => (
+                {LEAGUES.map((league) => (
                   <Link
                     key={league}
                     href={`/detail/${toSlug(league)}`}
@@ -115,7 +112,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
               </button>
             </div>
             <div className="drawerList">
-              {leagues.map((league) => (
+              {LEAGUES.map((league) => (
                 <Link
                   key={league}
                   href={`/detail/${toSlug(league)}`}

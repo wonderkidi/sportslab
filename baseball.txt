@@ -1,0 +1,27 @@
+종목,리그명,sport 값,league 값,비고
+야구,MLB,baseball,mlb,미국 프로야구
+야구,대학 야구,baseball,college-baseball,NCAA
+농구,NBA,basketball,nba,미국 프로농구
+농구,WNBA,basketball,wnba,미국 여자프로농구
+농구,대학 농구,basketball,mens-college-basketball,NCAA 남자
+미식축구,NFL,football,nfl,슈퍼볼!
+미식축구,대학 풋볼,football,college-football,NCAA
+하키,NHL,hockey,nhl,북미 아이스하키
+EPL (잉글랜드),soccer,eng.1,프리미어리그
+La Liga (스페인),soccer,esp.1,라리가
+Bundesliga (독일),soccer,ger.1,분데스리가
+Serie A (이탈리아),soccer,ita.1,세리에 A
+Ligue 1 (프랑스),soccer,fra.1,리그 1
+UCL (챔스),soccer,uefa.champions,챔피언스리그
+UEL (유로파),soccer,uefa.europa,유로파리그
+K-League (한국),soccer,kor.1,K리그 1
+MLS (미국),soccer,usa.1,미국 프로축구
+A-Match,soccer,fifa.friendly,국가대표 친선
+야구,KBO,baseball,kbo,한국 프로야구 ⚾
+야구,NPB,baseball,npb,일본 프로야구
+격투기,UFC,mma,ufc,종합격투기
+골프,PGA,golf,pga,PGA 투어
+골프,LPGA,golf,lpga,여자 PGA
+레이싱,F1,racing,f1,포뮬러 1 🏎️
+테니스,ATP,tennis,atp,남자 테니스
+테니스,WTA,tennis,wta,여자 테니스
