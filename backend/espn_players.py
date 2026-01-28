@@ -25,7 +25,7 @@ DB_CONFIG = {
     "database": os.getenv("DB_NAME", "sportslab"),
     "user": os.getenv("DB_USER", "postgres"),
     "password": os.getenv("DB_PASSWORD", "rootpassword"),
-    "port": os.getenv("DB_PORT", "5432"),
+    "port": os.getenv("DB_PORT", "54321"),
 }
 
 # --- 1. 도우미 함수: 단위 변환 ---
@@ -61,6 +61,7 @@ def sync_team_roster(sport, league):
     # DB 연결
     try:
         conn = psycopg2.connect(**DB_CONFIG)
+        print(f"conn :: {conn}")
         cur = conn.cursor()
     except Exception as e:
         print(f"❌ DB 연결 실패: {e}")

@@ -28,7 +28,7 @@ DB_CONFIG = {
     "port": os.getenv("DB_PORT", "5432"),
 }
 
-# --- 수집할 리그 목록 (요청하신 리스트) ---
+# --- 수집할 리그 목록 ---
 TARGET_LEAGUES = [
     ("baseball", "mlb"),
     ("soccer", "eng.1"),
