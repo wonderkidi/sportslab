@@ -1,0 +1,11 @@
+# Database
+psycopg2-binary == 2.9.10
+
+# API & Scraping
+requests == 2.32.3
+selenium == 4.28.1
+webdriver-manager == 4.0.2
+
+# Utilities
+python-dotenv == 1.0.1
+pathlib == 1.0.1

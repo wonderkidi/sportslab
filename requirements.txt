@@ -1,2 +1,27 @@
-streamlit==1.53.1
-psycopg2-binary==2.9.9
+# Node.js Environment
+node >= 18.0.0
+npm >= 9.0.0 or pnpm >= 8.0.0
+
+# Frontend Dependencies (from package.json)
+next == 16.1.6
+react == 19.2.3
+react-dom == 19.2.3
+
+# Database & ORM (Prisma 7 with Driver Adapter)
+@prisma/client == 7.3.0
+@prisma/adapter-pg == 7.3.0
+pg == 8.17.2
+prisma == 7.3.0 (dev)
+
+# Utilities
+dotenv == 17.2.3
+
+# Development & Build Tools
+typescript == ^5
+tailwindcss == ^4
+@tailwindcss/postcss == ^4
+eslint == ^9
+@types/node == ^20
+@types/pg == 8.16.0
+@types/react == ^19
+@types/react-dom == ^19

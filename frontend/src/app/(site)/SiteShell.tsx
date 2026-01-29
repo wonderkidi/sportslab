@@ -5,16 +5,18 @@ import { usePathname } from "next/navigation";
 import { PropsWithChildren, useState } from "react";
 import { LEAGUES } from "./config/leagues";
 
-const toSlug = (league: string) =>
-  league
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
 export default function SiteShell({ children }: PropsWithChildren) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  const isDetail = pathname?.startsWith("/detail/");
+
+  // 현재 어느 섹션(일정, 결과, 선수)에 있는지 파악
+  const getCurrentSection = () => {
+    if (pathname?.startsWith("/results")) return "results";
+    if (pathname?.startsWith("/players")) return "players";
+    return "schedule"; // 기본값은 일정
+  };
+
+  const section = getCurrentSection();
 
   return (
     <div className="page">
@@ -29,37 +31,35 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <nav className="tabNav">
               <Link
                 href="/"
-                className={`tabButton ${
-                  pathname === "/" ? "tabActive" : "tabInactive"
-                }`}
+                className={`tabButton ${pathname === "/" ? "tabActive" : "tabInactive"
+                  }`}
               >
                 전체
               </Link>
               <Link
-                href="/detail/kbo"
-                className={`tabButton ${
-                  pathname?.startsWith("/detail")
-                    ? "tabActive"
-                    : "tabInactive"
-                }`}
+                href="/schedule"
+                className={`tabButton ${pathname?.startsWith("/schedule")
+                  ? "tabActive"
+                  : "tabInactive"
+                  }`}
               >
-                경기일정・결과
+                경기일정
+              </Link>
+              <Link
+                href="/results"
+                className={`tabButton ${pathname?.startsWith("/results")
+                  ? "tabActive"
+                  : "tabInactive"
+                  }`}
+              >
+                경기결과
               </Link>
               <Link
                 href="/players"
-                className={`tabButton ${
-                  pathname === "/players" ? "tabActive" : "tabInactive"
-                }`}
+                className={`tabButton ${pathname?.startsWith("/players") ? "tabActive" : "tabInactive"
+                  }`}
               >
                 선수조회
-              </Link>
-              <Link
-                href="/community"
-                className={`tabButton ${
-                  pathname === "/community" ? "tabActive" : "tabInactive"
-                }`}
-              >
-                커뮤니티
               </Link>
             </nav>
           </div>
@@ -71,11 +71,11 @@ export default function SiteShell({ children }: PropsWithChildren) {
               <div className="leagueList">
                 {LEAGUES.map((league) => (
                   <Link
-                    key={league}
-                    href={`/detail/${toSlug(league)}`}
+                    key={league.slug}
+                    href={`/${section}/${league.slug}`}
                     className="leagueButton"
                   >
-                    {league}
+                    {league.name}
                   </Link>
                 ))}
               </div>
@@ -84,9 +84,7 @@ export default function SiteShell({ children }: PropsWithChildren) {
 
           <div className="contentGrid">
             <main className="main">
-              <section className={isDetail ? "detailGrid" : "cardGrid"}>
-                {children}
-              </section>
+              {children}
             </main>
           </div>
         </div>
@@ -114,12 +112,12 @@ export default function SiteShell({ children }: PropsWithChildren) {
             <div className="drawerList">
               {LEAGUES.map((league) => (
                 <Link
-                  key={league}
-                  href={`/detail/${toSlug(league)}`}
+                  key={league.slug}
+                  href={`/${section}/${league.slug}`}
                   className="drawerButton"
                   onClick={() => setMobileOpen(false)}
                 >
-                  {league}
+                  {league.name}
                 </Link>
               ))}
             </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./theme.css";
 import "./common.css";
+import "./league-pages.css";
 import "./globals.css";
 
 const displayFont = localFont({

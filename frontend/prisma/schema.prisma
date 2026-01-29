@@ -1,14 +1,161 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model sl_games {
+  id                                       BigInt                 @id
+  season_id                                Int?
+  league_id                                BigInt?
+  home_team_id                             BigInt?
+  away_team_id                             BigInt?
+  game_date                                DateTime               @db.Timestamptz(6)
+  status                                   String?                @db.VarChar(20)
+  home_score                               Int?
+  away_score                               Int?
+  score_detail                             Json?                  @default("{}")
+  created_at                               DateTime?              @default(now()) @db.Timestamptz(6)
+  sl_teams_sl_games_away_team_idTosl_teams sl_teams?              @relation("sl_games_away_team_idTosl_teams", fields: [away_team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sl_teams_sl_games_home_team_idTosl_teams sl_teams?              @relation("sl_games_home_team_idTosl_teams", fields: [home_team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sl_leagues                               sl_leagues?            @relation(fields: [league_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sl_seasons                               sl_seasons?            @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sl_player_game_stats                     sl_player_game_stats[]
+
+  @@index([game_date], map: "idx_games_date")
+  @@index([league_id], map: "idx_games_league")
+}
+
+model sl_leagues {
+  id           BigInt       @id
+  sport_id     Int?
+  name         String       @db.VarChar(100)
+  country      String?      @db.VarChar(50)
+  logo_url     String?
+  type         String?      @db.VarChar(20)
+  created_at   DateTime?    @default(now()) @db.Timestamptz(6)
+  slug         String?      @db.VarChar(50)
+  abbreviation String?      @db.VarChar(50)
+  sl_games     sl_games[]
+  sl_sports    sl_sports?   @relation(fields: [sport_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_seasons   sl_seasons[]
+}
+
+model sl_player_game_stats {
+  id             Int         @id @default(autoincrement())
+  game_id        BigInt?
+  player_id      BigInt?
+  team_id        BigInt?
+  minutes_played Int?
+  rating         Decimal?    @db.Decimal(3, 1)
+  stats          Json        @default("{}")
+  sl_games       sl_games?   @relation(fields: [game_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_players     sl_players? @relation(fields: [player_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_teams       sl_teams?   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([game_id, player_id])
+}
+
+model sl_player_season_stats {
+  id         Int         @id @default(autoincrement())
+  player_id  BigInt?
+  season_id  Int?
+  team_id    BigInt?
+  stats      Json        @default("{}")
+  updated_at DateTime?   @default(now()) @db.Timestamptz(6)
+  sl_players sl_players? @relation(fields: [player_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_seasons sl_seasons? @relation(fields: [season_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_teams   sl_teams?   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([player_id, season_id, team_id])
+  @@index([stats], map: "idx_player_stats_json", type: Gin)
+}
+
+model sl_player_squads {
+  id            Int         @id @default(autoincrement())
+  player_id     BigInt?
+  team_id       BigInt?
+  season_id     Int?
+  position      String?     @db.VarChar(50)
+  jersey_number Int?
+  is_active     Boolean?    @default(true)
+  sl_players    sl_players? @relation(fields: [player_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_seasons    sl_seasons? @relation(fields: [season_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_teams      sl_teams?   @relation(fields: [team_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([player_id, team_id, season_id])
+}
+
+model sl_players {
+  id                     BigInt                   @id
+  name                   String                   @db.VarChar(100)
+  firstname              String?                  @db.VarChar(50)
+  lastname               String?                  @db.VarChar(50)
+  birth_date             DateTime?                @db.Date
+  nationality            String?                  @db.VarChar(50)
+  height_cm              Int?
+  weight_kg              Int?
+  photo_url              String?
+  biometrics             Json?                    @default("{}")
+  created_at             DateTime?                @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime?                @default(now()) @db.Timestamptz(6)
+  sl_player_game_stats   sl_player_game_stats[]
+  sl_player_season_stats sl_player_season_stats[]
+  sl_player_squads       sl_player_squads[]
+
+  @@index([name], map: "idx_players_name")
+}
+
+model sl_seasons {
+  id                     Int                      @id @default(autoincrement())
+  league_id              BigInt?
+  year                   Int
+  start_date             DateTime?                @db.Date
+  end_date               DateTime?                @db.Date
+  is_current             Boolean?                 @default(false)
+  sl_games               sl_games[]
+  sl_player_season_stats sl_player_season_stats[]
+  sl_player_squads       sl_player_squads[]
+  sl_leagues             sl_leagues?              @relation(fields: [league_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sl_team_season_map     sl_team_season_map[]
+
+  @@unique([league_id, year])
+}
+
+model sl_sports {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique @db.VarChar(50)
+  slug       String       @db.VarChar(50)
+  created_at DateTime?    @default(now()) @db.Timestamptz(6)
+  sl_leagues sl_leagues[]
+}
+
+model sl_team_season_map {
+  id         Int         @id @default(autoincrement())
+  team_id    BigInt?
+  season_id  Int?
+  sl_seasons sl_seasons? @relation(fields: [season_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sl_teams   sl_teams?   @relation(fields: [team_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([team_id, season_id])
+}
+
+model sl_teams {
+  id                                       BigInt                   @id
+  name                                     String                   @db.VarChar(100)
+  code                                     String?                  @db.VarChar(10)
+  logo_url                                 String?
+  founded                                  Int?
+  venue_name                               String?                  @db.VarChar(100)
+  venue_capacity                           Int?
+  created_at                               DateTime?                @default(now()) @db.Timestamptz(6)
+  updated_at                               DateTime?                @default(now()) @db.Timestamptz(6)
+  sl_games_sl_games_away_team_idTosl_teams sl_games[]               @relation("sl_games_away_team_idTosl_teams")
+  sl_games_sl_games_home_team_idTosl_teams sl_games[]               @relation("sl_games_home_team_idTosl_teams")
+  sl_player_game_stats                     sl_player_game_stats[]
+  sl_player_season_stats                   sl_player_season_stats[]
+  sl_player_squads                         sl_player_squads[]
+  sl_team_season_map                       sl_team_season_map[]
 }

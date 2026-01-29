@@ -41,7 +41,6 @@ TARGET_LEAGUES = [
     ("soccer", "fra.1"),
     ("soccer", "uefa.champions"),
     ("soccer", "uefa.europa"),
-    ("soccer", "jpn.1"),
     ("soccer", "usa.1") 
 ]
 
