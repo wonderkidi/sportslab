@@ -25,12 +25,19 @@ export default async function ResultsPage({ params }: PageProps) {
     });
 
     // 종료된 경기 조회
+    const now = new Date();
     const games = await prisma.sl_games.findMany({
         where: {
             league_id: leagueDb?.id,
             status: {
                 in: ["STATUS_FINAL", "STATUS_FULL_TIME", "STATUS_POSTPONED"]
-            }
+            },
+            game_date: {
+                lte: now // 미래 데이터(테스트/더미) 제외
+            },
+            // 실제 팀 정보가 존재하는 데이터만 조회 (Broken Link 방지)
+            sl_teams_sl_games_home_team_idTosl_teams: { isNot: null },
+            sl_teams_sl_games_away_team_idTosl_teams: { isNot: null }
         },
         include: {
             sl_teams_sl_games_home_team_idTosl_teams: true,
@@ -89,10 +96,10 @@ export default async function ResultsPage({ params }: PageProps) {
                                                     {game.sl_teams_sl_games_home_team_idTosl_teams?.logo_url ? (
                                                         <img src={game.sl_teams_sl_games_home_team_idTosl_teams.logo_url} alt="" />
                                                     ) : (
-                                                        <div className="emptyLogo">{game.sl_teams_sl_games_home_team_idTosl_teams?.name?.charAt(0) || "H"}</div>
+                                                        <div className="emptyLogo">{game.sl_teams_sl_games_home_team_idTosl_teams?.name?.charAt(0) || "?"}</div>
                                                     )}
                                                 </div>
-                                                <span className="name">{game.sl_teams_sl_games_home_team_idTosl_teams?.name || "Home Team"}</span>
+                                                <span className="name">{game.sl_teams_sl_games_home_team_idTosl_teams?.name || "알 수 없는 팀"}</span>
                                             </div>
                                             <span className="scoreDisplay">{homeScore}</span>
                                         </div>
@@ -102,17 +109,17 @@ export default async function ResultsPage({ params }: PageProps) {
                                         </div>
 
                                         <div className={`teamBlock away ${isAwayWinner ? "winner" : ""}`}>
-                                            <span className="scoreDisplay">{awayScore}</span>
                                             <div className="teamInfo">
-                                                <span className="name">{game.sl_teams_sl_games_away_team_idTosl_teams?.name || "Away Team"}</span>
                                                 <div className="logoWrapper">
                                                     {game.sl_teams_sl_games_away_team_idTosl_teams?.logo_url ? (
                                                         <img src={game.sl_teams_sl_games_away_team_idTosl_teams.logo_url} alt="" />
                                                     ) : (
-                                                        <div className="emptyLogo">{game.sl_teams_sl_games_away_team_idTosl_teams?.name?.charAt(0) || "A"}</div>
+                                                        <div className="emptyLogo">{game.sl_teams_sl_games_away_team_idTosl_teams?.name?.charAt(0) || "?"}</div>
                                                     )}
                                                 </div>
+                                                <span className="name">{game.sl_teams_sl_games_away_team_idTosl_teams?.name || "알 수 없는 팀"}</span>
                                             </div>
+                                            <span className="scoreDisplay">{awayScore}</span>
                                         </div>
                                     </div>
 

@@ -3,6 +3,7 @@ import psycopg2
 import time
 import re
 import json
+import hashlib
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -42,11 +43,32 @@ KBO_TEAMS = [
     {'code': 'SK', 'name': 'SSG 랜더스'}
 ]
 
+def get_team_id_hash(team_code):
+    # KBO_game.py와 동일한 로직
+    if not team_code: return 0
+    h = int(hashlib.md5(team_code.encode()).hexdigest()[:6], 16)
+    return int(f"800{h}")
+
 def sync_kbo_players_selenium():
-    print("👤 KBO 선수 정보 수집 (디버깅 모드)...")
+    print("👤 KBO 선수 정보 및 스쿼드 동기화 시작...")
     
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
+
+    # 1. 리그 및 시즌 확인
+    cur.execute("SELECT id FROM sl_leagues WHERE slug = 'kbo'")
+    league_row = cur.fetchone()
+    if not league_row:
+        print("❌ KBO 리그 정보를 찾을 수 없습니다. KBO_game.py를 먼저 실행하세요.")
+        return
+    league_id = league_row[0]
+    
+    cur.execute("SELECT id FROM sl_seasons WHERE league_id = %s AND year = 2024", (league_id,))
+    season_row = cur.fetchone()
+    if not season_row:
+        print("❌ 2024 시즌 정보를 찾을 수 없습니다.")
+        return
+    season_id = season_row[0]
 
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
@@ -66,58 +88,42 @@ def sync_kbo_players_selenium():
         for team in KBO_TEAMS:
             team_code = team['code']
             team_name = team['name']
-            print(f"  ⚾ {team_name} 수집 시작...")
+            team_id = get_team_id_hash(team_code)
+            print(f"  ⚾ {team_name} (ID: {team_id}) 수집 시작...")
 
             try:
                 select_element = driver.find_element(By.ID, "cphContents_cphContents_cphContents_ddlTeam")
                 select = Select(select_element)
                 select.select_by_value(team_code)
-                time.sleep(2) # 로딩 시간 넉넉히
+                time.sleep(2)
 
                 page = 1
                 while True:
                     rows = driver.find_elements(By.CSS_SELECTOR, ".tEx tbody tr")
-                    
-                    # [디버깅] 행 개수 확인
-                    if len(rows) == 0:
-                        print(f"    ⚠️ {page}페이지: 행(tr)을 찾을 수 없습니다.")
-                        break
+                    if len(rows) == 0: break
                     
                     page_count = 0
-                    
                     for i, row in enumerate(rows):
                         cols = row.find_elements(By.TAG_NAME, "td")
-                        
-                        # [디버깅] 컬럼 개수 확인 (헤더나 빈 행인지 체크)
-                        if len(cols) < 7:
-                            # print(f"    ⚠️ 행 {i}: 컬럼 부족 ({len(cols)}개) - 스킵")
-                            continue
+                        if len(cols) < 7: continue
 
                         try:
-                            # [1] 선수명 & ID
-                            # 여기서 에러가 나는지 확인
-                            try:
-                                name_link = cols[1].find_element(By.TAG_NAME, "a")
-                                player_name = name_link.text.strip()
-                                href = name_link.get_attribute("href")
-                            except NoSuchElementException:
-                                print(f"    ❌ 행 {i}: 이름 링크(a 태그) 없음. 텍스트: {cols[1].text}")
-                                continue
-
+                            # 선수명 & ID
+                            name_link = cols[1].find_element(By.TAG_NAME, "a")
+                            player_name = name_link.text.strip()
+                            href = name_link.get_attribute("href")
+                            
                             if "playerId=" in href:
                                 kbo_id = int(href.split("playerId=")[1].split("&")[0])
-                            else:
-                                print(f"    ❌ 행 {i}: ID 파싱 실패 ({href})")
-                                continue
+                            else: continue
 
-                            # [3] 포지션
+                            # 상세 정보
+                            jersey_num_str = cols[0].text.strip()
+                            jersey_number = int(jersey_num_str) if jersey_num_str.isdigit() else None
                             position = cols[3].text.strip()
-
-                            # [4] 생년월일
                             birth_raw = cols[4].text.strip()
                             birth_date = birth_raw.replace('.', '-') if birth_raw else None
                             
-                            # [5] 체격
                             hw_raw = cols[5].text.strip()
                             height, weight = None, None
                             numbers = re.findall(r'\d+', hw_raw)
@@ -125,44 +131,48 @@ def sync_kbo_players_selenium():
                                 height = int(numbers[0])
                                 weight = int(numbers[1])
                             
-                            # [6] 출신교
                             school_info = cols[6].text.strip() or None
-                            
-                            photo_url = f"https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2025/{kbo_id}.jpg"
+                            # 2025 이미지는 아직 없을 수 있으니 2024로 시도
+                            photo_url = f"https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2024/{kbo_id}.jpg"
 
                             biometrics = {
                                 "position": position,
-                                "school": school_info
+                                "school": school_info,
+                                "team": team_name
                             }
 
-                            sql = """
+                            # sl_players 저장
+                            cur.execute("""
                                 INSERT INTO sl_players 
                                 (id, name, birth_date, height_cm, weight_kg, nationality, photo_url, biometrics, created_at, updated_at)
                                 VALUES (%s, %s, %s, %s, %s, 'South Korea', %s, %s, NOW(), NOW())
                                 ON CONFLICT (id) DO UPDATE 
                                 SET name = EXCLUDED.name,
-                                    birth_date = EXCLUDED.birth_date,
-                                    height_cm = EXCLUDED.height_cm,
-                                    weight_kg = EXCLUDED.weight_kg,
                                     photo_url = EXCLUDED.photo_url,
                                     biometrics = COALESCE(sl_players.biometrics, '{}'::jsonb) || EXCLUDED.biometrics,
                                     updated_at = NOW();
-                            """
-                            cur.execute(sql, (kbo_id, player_name, birth_date, height, weight, photo_url, json.dumps(biometrics)))
+                            """, (kbo_id, player_name, birth_date, height, weight, photo_url, json.dumps(biometrics)))
+
+                            # sl_player_squads 저장
+                            cur.execute("""
+                                INSERT INTO sl_player_squads 
+                                (player_id, team_id, season_id, position, jersey_number, is_active)
+                                VALUES (%s, %s, %s, %s, %s, true)
+                                ON CONFLICT (player_id, team_id, season_id) 
+                                DO UPDATE SET 
+                                    position = EXCLUDED.position,
+                                    jersey_number = EXCLUDED.jersey_number,
+                                    is_active = true;
+                            """, (kbo_id, team_id, season_id, position, jersey_number))
                             
                             page_count += 1
                             total_count += 1
 
-                        except Exception as e:
-                            # [디버깅] 상세 에러 출력
-                            conn.rollback()
-                            print(f"    ❌ 저장 실패 (행 {i}): {e}")
-                            continue
+                        except Exception: continue
                     
                     conn.commit()
-                    print(f"    - {page}페이지: {page_count}명 저장 완료")
+                    print(f"    - {page}페이지: {page_count}명 완료")
                     
-                    # 다음 페이지
                     try:
                         next_page = page + 1
                         paging_area = driver.find_element(By.CLASS_NAME, "paging")
@@ -170,29 +180,22 @@ def sync_kbo_players_selenium():
                         driver.execute_script("arguments[0].click();", next_btn)
                         time.sleep(2)
                         page += 1
-                    except NoSuchElementException:
-                        break 
-                    except Exception as e:
-                        print(f"    ⚠️ 페이지 이동 에러: {e}")
-                        break
+                    except: break
 
                 print(f"    ✅ {team_name} 완료")
                 driver.get(url) 
                 time.sleep(1)
 
             except Exception as e:
-                print(f"    ❌ {team_name} 팀 처리 실패: {e}")
+                print(f"    ❌ {team_name} 오류: {e}")
                 driver.get(url)
                 time.sleep(1)
 
-    except Exception as e:
-        print(f"❌ 프로세스 에러: {e}")
-    
     finally:
         driver.quit()
         cur.close()
         conn.close()
-        print(f"🎉 총 {total_count}명 완료.")
+        print(f"🎉 총 {total_count}명의 KBO 선수/스쿼드 데이터 동기화 완료.")
 
 if __name__ == "__main__":
     sync_kbo_players_selenium()

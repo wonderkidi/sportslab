@@ -24,26 +24,33 @@ DB_CONFIG = {
     "port": os.getenv("DB_PORT", "5432"),
 }
 
-KBO_TEAM_MAP = {
-    'LG': 'LG 트윈스', 'NC': 'NC 다이노스', 'HT': 'KIA 타이거즈',
-    'SK': 'SSG 랜더스', 'KT': 'KT 위즈', 'LT': '롯데 자이언츠',
-    'SS': '삼성 라이온즈', 'OB': '두산 베어스', 'HH': '한화 이글스',
-    'WO': '키움 히어로즈'
+KLEAGUE_TEAM_MAP = {
+    '01': '울산 HD', '03': '포항 스틸러스', '04': '제주 유나이티드',
+    '05': '전북 현대 모터스', '09': 'FC 서울', '10': '대전 하나 시티즌',
+    '12': '수원 삼성 블루윙즈', '17': '대구 FC', '18': '인천 유나이티드',
+    '21': '강원 FC', '22': '광주 FC', '29': '수원 FC', '35': '김천 상무',
+    '02': '성남 FC', '06': '부산 아이파크', '07': '전남 드래곤즈', 
+    '13': '강원 FC', '15': '경남 FC', '20': '안산 그리너스',
+    '23': 'FC 안양', '24': '충남 아산 FC', '25': '서울 이랜드 FC',
+    '26': '부천 FC 1995', '27': '김포 FC', '28': '천안 시티 FC', '30': '충북 청주 FC'
 }
 
 def get_game_id_hash(naver_game_id):
     return int(hashlib.sha256(str(naver_game_id).encode('utf-8')).hexdigest()[:15], 16)
 
 def get_team_id_hash(team_code):
-    # KBO 팀 코드를 기반으로 고유 ID 생성 (800 + hash)
+    # K-League 팀 코드를 기반으로 고유 ID 생성 (900 + numeric_code or hash)
     if not team_code: return 0
-    h = int(hashlib.md5(team_code.encode()).hexdigest()[:6], 16)
-    return int(f"800{h}")
+    try:
+        return int(f"900{int(team_code)}")
+    except:
+        h = int(hashlib.md5(team_code.encode()).hexdigest()[:6], 16)
+        return int(f"900{h}")
 
 def ensure_team_exists(cur, team_code, team_name, logo_url=None):
     if not team_code: return None
     
-    full_name = KBO_TEAM_MAP.get(team_code, team_name)
+    full_name = KLEAGUE_TEAM_MAP.get(team_code, team_name)
     internal_id = get_team_id_hash(team_code)
     
     cur.execute("SELECT id FROM sl_teams WHERE id = %s", (internal_id,))
@@ -59,25 +66,23 @@ def ensure_team_exists(cur, team_code, team_name, logo_url=None):
     """, (internal_id, full_name, logo_url))
     return internal_id
 
-def sync_kbo_games(year, month):
-    print(f"⚾ {year}년 {month}월 KBO 경기 데이터 수집 중...")
+def sync_kleague_games(year, month):
+    print(f"⚽ {year}년 {month}월 K-League 경기 데이터 수집 중...")
     
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
 
     try:
-        # 1. 리그 ID 조회 및 생성
-        cur.execute("SELECT id FROM sl_leagues WHERE slug = 'kbo'")
+        cur.execute("SELECT id FROM sl_leagues WHERE slug = 'k-league'")
         row = cur.fetchone()
         if row: league_id = row[0]
         else:
-            cur.execute("INSERT INTO sl_sports (name, slug) VALUES ('Baseball', 'baseball') ON CONFLICT (name) DO NOTHING")
-            cur.execute("SELECT id FROM sl_sports WHERE slug='baseball'")
+            cur.execute("INSERT INTO sl_sports (name, slug) VALUES ('Soccer', 'soccer') ON CONFLICT (name) DO NOTHING")
+            cur.execute("SELECT id FROM sl_sports WHERE slug='soccer'")
             sport_id = cur.fetchone()[0]
-            league_id = 200
-            cur.execute("INSERT INTO sl_leagues (id, sport_id, name, slug, country, type) VALUES (%s, %s, 'KBO League', 'kbo', 'South Korea', 'League') ON CONFLICT DO NOTHING", (league_id, sport_id))
+            league_id = 100
+            cur.execute("INSERT INTO sl_leagues (id, sport_id, name, slug, country, type) VALUES (%s, %s, 'K League', 'k-league', 'South Korea', 'League') ON CONFLICT DO NOTHING", (league_id, sport_id))
 
-        # 2. 시즌 ID 조회 및 생성
         cur.execute("SELECT id FROM sl_seasons WHERE league_id = %s AND year = %s", (league_id, year))
         row = cur.fetchone()
         if row: season_id = row[0]
@@ -85,12 +90,11 @@ def sync_kbo_games(year, month):
             cur.execute("INSERT INTO sl_seasons (league_id, year, is_current) VALUES (%s, %s, true) RETURNING id", (league_id, year))
             season_id = cur.fetchone()[0]
 
-        # 3. 네이버 API 호출
         url = "https://api-gw.sports.naver.com/schedule/games"
         params = {
             "fields": "basic,status,team,score",
-            "upperCategoryId": "kbaseball",
-            "categoryId": "kbo",
+            "upperCategoryId": "kfootball",
+            "categoryId": "kleague",
             "fromDate": f"{year}-{month:02d}-01",
             "toDate": f"{year}-{month:02d}-31",
             "size": 300
@@ -105,7 +109,6 @@ def sync_kbo_games(year, month):
             try:
                 game_id_str = g.get('gameId')
                 game_date = g.get('gameDateTime')
-                
                 status_info = g.get('statusInfo', {})
                 status_origin = status_info.get('name', '') if isinstance(status_info, dict) else str(status_info)
 
@@ -124,9 +127,6 @@ def sync_kbo_games(year, month):
                 
                 status_map = { "종료": "STATUS_FINAL", "취소": "STATUS_CANCELLED", "예정": "STATUS_SCHEDULED", "경기중": "STATUS_IN_PROGRESS" }
                 status = status_map.get(status_origin, "STATUS_SCHEDULED")
-                
-                # If game time is in the past and status is still scheduled, it might be missed. 
-                # But we follow Naver's status.
                 
                 home_score = g.get('homeTeamScore') or 0
                 away_score = g.get('awayTeamScore') or 0
@@ -159,5 +159,5 @@ def sync_kbo_games(year, month):
         conn.close()
 
 if __name__ == "__main__":
-    for m in range(3, 11):
-        sync_kbo_games(2024, m)
+    for m in range(3, 12):
+        sync_kleague_games(2024, m)

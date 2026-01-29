@@ -18,7 +18,10 @@ export default async function HomePage() {
       const lastGame = leagueDb ? await prisma.sl_games.findFirst({
         where: {
           league_id: leagueDb.id,
-          status: { in: ["STATUS_FINAL", "STATUS_FULL_TIME"] }
+          status: { in: ["STATUS_FINAL", "STATUS_FULL_TIME"] },
+          game_date: { lte: new Date() }, // 미래 데이터 제외
+          sl_teams_sl_games_home_team_idTosl_teams: { isNot: null }, // 팀 정보 필수
+          sl_teams_sl_games_away_team_idTosl_teams: { isNot: null }
         },
         include: {
           sl_teams_sl_games_home_team_idTosl_teams: true,
