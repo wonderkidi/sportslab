@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { LEAGUES } from "../../config/leagues";
+import UnderConstructionCard from "@/components/UnderConstructionCard";
 
 interface PageProps {
     params: Promise<{ league: string }>;
@@ -9,6 +10,18 @@ export default async function SchedulePage({ params }: PageProps) {
     const { league: leagueSlug } = await params;
 
     const leagueConfig = LEAGUES.find((l) => l.slug === leagueSlug);
+
+    if (leagueSlug === "k-league") {
+        return (
+            <div className="leagueSelectionContainer">
+                <UnderConstructionCard
+                    title="K LEAGUE"
+                    highlight="K League 데이터 준비중"
+                    detail="정확한 데이터 제공을 위해 준비 중입니다."
+                />
+            </div>
+        );
+    }
 
     if (!leagueConfig) {
         return (

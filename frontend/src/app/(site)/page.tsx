@@ -4,7 +4,11 @@ import { LEAGUES } from "./config/leagues";
 
 export default async function HomePage() {
   // 메인 페이지에 표시할 주요 리그들
-  const featuredLeagues = LEAGUES.slice(0, 9);
+  const kblLeague = LEAGUES.find((league) => league.slug === "kbl");
+  const baseLeagues = LEAGUES.filter(
+    (league) => league.slug !== "k-league" && league.slug !== "kbl"
+  );
+  const featuredLeagues = [kblLeague, ...baseLeagues].filter(Boolean).slice(0, 9);
 
   // 각 리그별 최신 경기 결과 가져오기
   const leagueCards = await Promise.all(
@@ -35,14 +39,20 @@ export default async function HomePage() {
         lastGame,
       };
     })
+  ).then((cards) =>
+    cards.sort((a, b) => Number(Boolean(b.lastGame)) - Number(Boolean(a.lastGame)))
   );
 
   return (
     <section className="cardGrid">
       {leagueCards.map((card, index) => {
         const game = card.lastGame;
-        const homeName = game?.sl_teams_sl_games_home_team_idTosl_teams?.code || game?.sl_teams_sl_games_home_team_idTosl_teams?.name || "Home";
-        const awayName = game?.sl_teams_sl_games_away_team_idTosl_teams?.code || game?.sl_teams_sl_games_away_team_idTosl_teams?.name || "Away";
+        const homeTeam = game?.sl_teams_sl_games_home_team_idTosl_teams;
+        const awayTeam = game?.sl_teams_sl_games_away_team_idTosl_teams;
+        const homeName = homeTeam?.code || homeTeam?.name || "Home";
+        const awayName = awayTeam?.code || awayTeam?.name || "Away";
+        const homeLogo = homeTeam?.logo_url || null;
+        const awayLogo = awayTeam?.logo_url || null;
         const highlight = game
           ? `${homeName} ${game.home_score} - ${game.away_score} ${awayName}`
           : "진행된 경기 없음";
@@ -62,15 +72,44 @@ export default async function HomePage() {
               <div>
                 <h2 className="cardTitle">{card.name}</h2>
               </div>
-              <span className="cardBadge">최근결과</span>
             </div>
             <div className="cardBody">
-              <p className="cardHighlight">{highlight}</p>
-              <p className="cardDetail">{detail}</p>
-            </div>
-            <div className="cardFooter">
-              <span className="footerDot" />
-              {card.sport.toUpperCase()}
+              {game && (
+                <p className="cardDetail cardDetailCenter">{detail}</p>
+              )}
+              {game ? (
+                <div className="scoreboard">
+                  <div className="scoreTeam">
+                    <div className="scoreLogo">
+                      {homeLogo ? (
+                        <img src={homeLogo} alt={homeName} />
+                      ) : (
+                        <span className="scoreFallback">{homeName.charAt(0)}</span>
+                      )}
+                    </div>
+                    <span className="scoreName">{homeName}</span>
+                  </div>
+                  <div className="scoreCenter">
+                    <span className="scoreValue">
+                      {game.home_score} - {game.away_score}
+                    </span>
+                    <span className="scoreVs">VS</span>
+                  </div>
+                  <div className="scoreTeam">
+                    <div className="scoreLogo">
+                      {awayLogo ? (
+                        <img src={awayLogo} alt={awayName} />
+                      ) : (
+                        <span className="scoreFallback">{awayName.charAt(0)}</span>
+                      )}
+                    </div>
+                    <span className="scoreName">{awayName}</span>
+                  </div>
+                </div>
+              ) : (
+                <p className="cardHighlight">{highlight}</p>
+              )}
+              {!game && <p className="cardDetail">{detail}</p>}
             </div>
           </Link>
         );

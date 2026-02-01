@@ -1,4 +1,5 @@
 import Link from "next/link";
+import UnderConstructionCard from "@/components/UnderConstructionCard";
 
 type DetailPageProps = {
   params: { league: string };
@@ -6,6 +7,17 @@ type DetailPageProps = {
 
 export default function DetailPage({ params }: DetailPageProps) {
   const league = (params?.league ?? "").replace(/-/g, " ").toUpperCase();
+  if (params?.league === "k-league") {
+    return (
+      <div className="leagueSelectionContainer">
+        <UnderConstructionCard
+          title="K LEAGUE"
+          highlight="K League 데이터 준비중"
+          detail="정확한 데이터 제공을 위해 준비 중입니다."
+        />
+      </div>
+    );
+  }
 
   return (
     <div id="contents" className="detailWrap">

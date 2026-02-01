@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useState, useMemo, useEffect } from "react";
 import { LEAGUES } from "../../config/leagues";
+import SafeImage from "@/components/SafeImage";
+import UnderConstructionCard from "@/components/UnderConstructionCard";
 
 interface Player {
     id: string;
@@ -77,6 +79,12 @@ export default function PlayersPage({ params }: { params: Promise<{ league: stri
                 });
             }
 
+            if (p.league === "k-league") {
+                setLoading(false);
+                setSquads([]);
+                return;
+            }
+
             if (p.league) {
                 // Client-side fetch to avoid potential BigInt serialization issues in RSC params
                 fetch(`/api/players?league=${p.league}`)
@@ -124,6 +132,18 @@ export default function PlayersPage({ params }: { params: Promise<{ league: stri
         return result;
     }, [squads, searchTerm, selectedTeam]);
 
+    if (leagueSlug === "k-league") {
+        return (
+            <div className="leagueSelectionContainer">
+                <UnderConstructionCard
+                    title="K LEAGUE"
+                    highlight="K League 데이터 준비중"
+                    detail="정확한 데이터 제공을 위해 준비 중입니다."
+                />
+            </div>
+        );
+    }
+
     if (!loading && !leagueInfo) {
         return (
             <div className="emptyState">
@@ -136,7 +156,7 @@ export default function PlayersPage({ params }: { params: Promise<{ league: stri
     return (
         <div className="playersContainer">
             <div className="pageHeader">
-                <h1>{leagueInfo?.name} 선수진</h1>
+                <h1>{leagueInfo?.name}</h1>
                 <p className="leagueInfo">
                     {leagueInfo?.sport} • {leagueInfo?.country}
                 </p>
@@ -199,13 +219,9 @@ export default function PlayersPage({ params }: { params: Promise<{ league: stri
                                     className="playerCard"
                                 >
                                     <div className="playerPhoto">
-                                        <img
-                                            src={squad.sl_players?.photo_url || "/images/noimage.png"}
+                                        <SafeImage
+                                            src={squad.sl_players?.photo_url}
                                             alt={squad.sl_players?.name || "Player Profile"}
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = "/images/noimage.png";
-                                                (e.target as HTMLImageElement).style.opacity = "0.5";
-                                            }}
                                             style={!squad.sl_players?.photo_url ? { opacity: 0.5 } : {}}
                                         />
                                     </div>

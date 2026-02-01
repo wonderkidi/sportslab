@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { LEAGUES } from "../../../config/leagues";
+import SafeImage from "@/components/SafeImage";
+import UnderConstructionCard from "@/components/UnderConstructionCard";
 
 type PlayerPageProps = {
     params: Promise<{ league: string; playerId: string }>;
@@ -10,6 +12,18 @@ export default async function PlayerPage({ params }: PlayerPageProps) {
     const { league, playerId: playerIdStr } = await params;
     const playerId = BigInt(playerIdStr);
     const leagueConfig = LEAGUES.find(l => l.slug === league);
+    const isNba = league === "nba";
+    if (league === "k-league") {
+        return (
+            <div className="leagueSelectionContainer">
+                <UnderConstructionCard
+                    title="K LEAGUE"
+                    highlight="K League 데이터 준비중"
+                    detail="정확한 데이터 제공을 위해 준비 중입니다."
+                />
+            </div>
+        );
+    }
 
     // 선수 기본 정보 조회
     const player = await prisma.sl_players.findUnique({
@@ -86,13 +100,9 @@ export default async function PlayerPage({ params }: PlayerPageProps) {
             <section className="playerMainInfo">
                 <div className="playerVisual">
                     <div className="playerPhotoLarge">
-                        <img
-                            src={player.photo_url || "/images/noimage.png"}
+                        <SafeImage
+                            src={player.photo_url}
                             alt={player.name}
-                            onError={(e) => {
-                                (e.target as HTMLImageElement).src = "/images/noimage.png";
-                                (e.target as HTMLImageElement).style.opacity = "0.3";
-                            }}
                             style={!player.photo_url ? { opacity: 0.3 } : {}}
                         />
                     </div>
@@ -169,8 +179,26 @@ export default async function PlayerPage({ params }: PlayerPageProps) {
                                 <tr>
                                     <th>일자</th>
                                     <th>상대</th>
-                                    <th>스코어</th>
-                                    <th>기록</th>
+                                    {isNba ? (
+                                        <>
+                                            <th>시간</th>
+                                            <th>야투</th>
+                                            <th>야투율(%)</th>
+                                            <th>3점슛</th>
+                                            <th>3점슛율(%)</th>
+                                            <th>자유투</th>
+                                            <th>자유투율(%)</th>
+                                            <th>리바운드</th>
+                                            <th>어시스트</th>
+                                            <th>블록</th>
+                                            <th>스틸</th>
+                                            <th>파울</th>
+                                            <th>턴오버</th>
+                                            <th>득점</th>
+                                        </>
+                                    ) : (
+                                        <th>기록</th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody>
@@ -182,20 +210,40 @@ export default async function PlayerPage({ params }: PlayerPageProps) {
                                     const opponent = isHome
                                         ? game.sl_teams_sl_games_away_team_idTosl_teams?.name
                                         : game.sl_teams_sl_games_home_team_idTosl_teams?.name;
+                                    const rawStats = (stat.stats as any)?.stats;
+                                    const statsList = Array.isArray(rawStats) ? rawStats : [];
 
                                     return (
                                         <tr key={stat.id.toString()}>
                                             <td className="dateCell">{new Intl.DateTimeFormat('ko-KR', { month: '2-digit', day: '2-digit' }).format(new Date(game.game_date))}</td>
                                             <td className="oppCell">{opponent}</td>
-                                            <td className="scoreCell">{game.home_score}:{game.away_score}</td>
-                                            <td className="statBrief">
-                                                {stat.stats && typeof stat.stats === 'object' && Object.entries(stat.stats as any).slice(0, 3).map(([k, v]) => `${k}:${v}`).join(', ')}
-                                            </td>
+                                            {isNba ? (
+                                                <>
+                                                    <td className="statBrief">{statsList[0] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[1] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[2] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[3] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[4] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[5] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[6] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[7] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[8] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[9] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[10] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[11] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[12] ?? "-"}</td>
+                                                    <td className="statBrief">{statsList[13] ?? "-"}</td>
+                                                </>
+                                            ) : (
+                                                <td className="statBrief">
+                                                    {stat.stats && typeof stat.stats === 'object' && Object.entries(stat.stats as any).slice(0, 3).map(([k, v]) => `${k}:${v}`).join(', ')}
+                                                </td>
+                                            )}
                                         </tr>
                                     );
                                 }) : (
                                     <tr>
-                                        <td colSpan={4} className="emptyRow">최근 경기 기록이 없습니다.</td>
+                                        <td colSpan={isNba ? 16 : 3} className="emptyRow">최근 경기 기록이 없습니다.</td>
                                     </tr>
                                 )}
                             </tbody>
