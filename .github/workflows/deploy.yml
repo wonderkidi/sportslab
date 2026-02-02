@@ -2,7 +2,7 @@ name: NAS Build and Deploy
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
