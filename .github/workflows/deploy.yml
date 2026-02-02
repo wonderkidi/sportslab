@@ -30,7 +30,7 @@ jobs:
           docker run -d \
             --name sportslab-web \
             --restart unless-stopped \
-            -p 3000:3000 \
+            -p 3010:3010 \
             -e TZ=Asia/Seoul \
             -e DB_HOST=onno.synology.me \
             -e DB_PORT=54321 \
