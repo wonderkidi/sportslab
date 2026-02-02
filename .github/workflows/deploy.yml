@@ -2,28 +2,23 @@ name: NAS Build and Deploy
 
 on:
   push:
-    branches: [ "master" ]  # master 브랜치에 푸시될 때 실행
-  workflow_dispatch:        # 수동 실행 가능
+    branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    # [중요] GitHub 서버가 아닌 내 NAS에서 실행
     runs-on: [self-hosted]
 
     steps:
-      # 1. 최신 코드 내려받기
       - name: Checkout Source Code
         uses: actions/checkout@v3
 
-      # 2. 도커 이미지 빌드 (Docker Hub 로그인 불필요)
       - name: Build Docker Image
         run: |
           echo "🔨 Docker 이미지 빌드 시작..."
-          # [중요] ./frontend 폴더를 빌드 경로로 지정합니다.
-          # 이미지 이름: sportslab, 태그: latest
+          # docker build --no-cache -t [이미지명]:[태그] [Dockerfile위치]
           docker build --no-cache -t sportslab:latest ./frontend
 
-      # 3. 기존 컨테이너 교체 및 재실행
       - name: Deploy to NAS
         run: |
           echo "🛑 기존 컨테이너 중단 및 삭제..."
@@ -31,19 +26,19 @@ jobs:
           docker rm sportslab-web || true
           
           echo "🚀 새 컨테이너 실행..."
+          # [수정됨] 줄바꿈 문자(\)를 추가하여 명령어가 끊기지 않도록 수정했습니다.
           docker run -d \
             --name sportslab-web \
             --restart unless-stopped \
             -p 3000:3000 \
             -e TZ=Asia/Seoul \
-            -e DB_HOST=onno.synology.me  \
+            -e DB_HOST=onno.synology.me \
             -e DB_PORT=54321 \
             -e DB_USERNAME=hongun \
             -e DB_PASSWORD=Dlskdud240! \
-            -e DB_NAME=sportslab
+            -e DB_NAME=sportslab \
             sportslab:latest
             
-      # 4. 불필요한 이미지 정리 (NAS 용량 절약)
       - name: Clean up
         run: |
           docker image prune -f
