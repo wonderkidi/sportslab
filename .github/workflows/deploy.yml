@@ -25,18 +25,13 @@ jobs:
           docker stop sportslab-web || true
           docker rm sportslab-web || true
           
-          echo "🚀 새 컨테이너 실행..."
-          # [수정됨] 줄바꿈 문자(\)를 추가하여 명령어가 끊기지 않도록 수정했습니다.
           docker run -d \
             --name sportslab-web \
             --restart unless-stopped \
             -p 3010:3010 \
             -e TZ=Asia/Seoul \
-            -e DB_HOST=onno.synology.me \
-            -e DB_PORT=54321 \
-            -e DB_USERNAME=hongun \
-            -e DB_PASSWORD=Dlskdud240! \
-            -e DB_NAME=sportslab \
+            -e NODE_ENV=production \
+            -e DATABASE_URL='postgresql://hongun:Dlskdud240!@onno.synology.me:54321/sportslab?schema=public' \
             sportslab:latest
             
       - name: Clean up
