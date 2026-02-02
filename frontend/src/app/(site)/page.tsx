@@ -8,7 +8,11 @@ export default async function HomePage() {
   const baseLeagues = LEAGUES.filter(
     (league) => league.slug !== "k-league" && league.slug !== "kbl"
   );
-  const featuredLeagues = [kblLeague, ...baseLeagues].filter(Boolean).slice(0, 9);
+  const featuredLeagues = [kblLeague, ...baseLeagues]
+    .filter(
+      (league): league is (typeof LEAGUES)[number] => Boolean(league)
+    )
+    .slice(0, 9);
 
   // 각 리그별 최신 경기 결과 가져오기
   const leagueCards = await Promise.all(
