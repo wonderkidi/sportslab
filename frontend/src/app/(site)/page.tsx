@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { LEAGUES } from "./config/leagues";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   // 메인 페이지에 표시할 주요 리그들
   const kblLeague = LEAGUES.find((league) => league.slug === "kbl");

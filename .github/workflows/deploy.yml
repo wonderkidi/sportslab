@@ -16,8 +16,14 @@ jobs:
       - name: Build Docker Image
         run: |
           echo "🔨 Docker 이미지 빌드 시작..."
-          # docker build --no-cache -t [이미지명]:[태그] [Dockerfile위치]
-          docker build --no-cache -t sportslab:latest ./frontend
+          
+          # [수정 핵심 1] --network host : 빌드 컨테이너가 NAS 네트워크를 바로 쓰도록 설정
+          # [수정 핵심 2] --build-arg : Dockerfile의 ARG 변수에 DB 주소 주입
+          # [주의] IP주소는 NAS 내부 IP(예: 192.168.0.x)를 쓰는 것이 가장 안전합니다.
+          
+          docker build --no-cache --network host \
+            --build-arg DATABASE_URL='postgresql://hongun:Dlskdud240!@onno.synology.me:54321/sportslab?schema=public' \
+            -t sportslab:latest ./frontend
 
       - name: Deploy to NAS
         run: |
@@ -25,13 +31,17 @@ jobs:
           docker stop sportslab-web || true
           docker rm sportslab-web || true
           
+          echo "🚀 새 컨테이너 실행..."
+          # [수정 핵심 3] 실행 시에도 네트워크 모드를 host로 하거나 포트매핑 유지
+          # 여기서는 포트 매핑 방식을 유지했습니다.
+          
           docker run -d \
             --name sportslab-web \
             --restart unless-stopped \
             -p 3010:3010 \
             -e TZ=Asia/Seoul \
             -e NODE_ENV=production \
-            -e DATABASE_URL='postgresql://hongun:Dlskdud240!@onno.synology.me:54321/sportslab?schema=public' \
+            -e DATABASE_URL='postgresql://hongun:Dlskdud240!@172.17.0.1:54321/sportslab?schema=public' \
             sportslab:latest
             
       - name: Clean up
